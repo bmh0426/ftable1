@@ -110,6 +110,7 @@ public class Ftable {
             }
         }
         fTable();
+        System.exit(1);
     }
 
     private static void fTable()
