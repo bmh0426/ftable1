@@ -310,17 +310,18 @@ public class Ftable {
         }
         else
         {
-            System.out.println("Enter a string!");
-            plain = scanner.nextLine();
-            plain = plain.toUpperCase();
-            
             if(verbosity)
             {
-                
+                System.out.println("Input file not given.");
             }
+            System.out.println("Enter a string!");
+            plain = scanner.nextLine();
+            plain = plain.toUpperCase();          
+            
             /*This will move the start offset if one was given.*/
             for (int num1 = startCharSkip; num1 < plain.length();)
             {
+                
                 /*If the character is not a letter then num1 is increased
                  * until a letter is found.
                  */
