@@ -26,6 +26,7 @@ public class Ftable {
     private static boolean outFile = false;
     private static FileReader rFile = null;
     private static FileWriter wFile = null;
+    private static boolean verbosity = false;
     
     public static void main(String[] args) 
     {
@@ -37,17 +38,29 @@ public class Ftable {
             /*if -v is given*/
             if (arg.equals("-v"))
             {
-                System.out.println(arg);
+                System.out.println("-p is for the period.");
+                System.out.println("-s is for skipping letter characters.");
+                verbosity = true;
             }
             /*if -s is given*/
             else if (arg.equals("-s"))
             {
                 startCharSkip = Integer.parseInt(args[++argNum]);
+                if (verbosity)
+                {
+                    System.out.println("Skipping the first " 
+                            + startCharSkip + " letters!");
+                }
             }
             /*if -p is given*/
             else if (arg.equals("-p"))
             {
                 countEvery = Integer.parseInt(args[++argNum]);
+                if (verbosity)
+                {
+                    System.out.println("Only counting every " 
+                            + countEvery + " letter!");
+                }
             }
             /*if an input or output file is given*/
             else if (arg.contains(".in") || arg.contains(".txt") || 
@@ -62,6 +75,11 @@ public class Ftable {
                     try
                     {
                         rFile = new FileReader(arg);
+                        if (verbosity)
+                        {
+                            System.out.println("Using " + rFile 
+                                    + " as input file!");
+                        }
                     }
                     catch (FileNotFoundException ex)
                     {
@@ -74,6 +92,11 @@ public class Ftable {
                     try
                     {
                         wFile = new FileWriter(arg);
+                        if (verbosity)
+                        {
+                            System.out.println("Using " + wFile 
+                                    + " as output file!");
+                        }
                     }
                     catch (IOException ex)
                     {
