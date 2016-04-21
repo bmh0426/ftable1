@@ -136,20 +136,41 @@ public class Ftable {
         {
             numCha.put((char)('A' + num), 0);
         }
+        if (verbosity)
+        {
+            System.out.println("The hash map was made! " + numCha);
+        }
         /*Check to see if an input file was given.*/
         if (inFile)
         {
+            if (verbosity)
+            {
+                System.out.println("In ifFile code!");
+            }
             /*Check to see if a start offset was given.*/
             if (startCharSkip != 0)
             {
+                if(verbosity)
+                {
+                    System.out.println("In startCharSkip code!");
+                }
                 /*This will move the read of the file a number of times
                  * equal to the offset given.
                  */
                 for (int num = 0; num <= startCharSkip && numChar != -1; num++)
-                {                    
+                {  
+                    if (verbosity)
+                    {
+                        System.out.println("Skipping " + num + " character.");
+                    }
                     try
                     {
                         numChar = rFile.read();
+                        if (verbosity)
+                        {
+                            System.out.println("Read in " 
+                                    + (char)numChar + " character!");
+                        }
                     }
                     catch (IOException ex)
                     {
@@ -162,8 +183,18 @@ public class Ftable {
                      */
                     while (!Character.isLetter(cha))
                     {
+                        if (verbosity)
+                        {
+                            System.out.println(cha + " is not a letter!");
+                        }
                         try
                         {
+                            if (verbosity)
+                            {
+                                System.out.println(cha 
+                                    + " is not a letter, so reading "
+                                        + "next character!");
+                            }
                             numChar = rFile.read();
                         }
                         catch (IOException ex)
@@ -176,6 +207,11 @@ public class Ftable {
             }
             else
             {
+                if (verbosity)
+                {
+                    System.out.println("Skipped startCharSkip code!" 
+                            + " Reading in first character.");
+                }
                 try
                 {
                     numChar = rFile.read();
@@ -189,15 +225,26 @@ public class Ftable {
              * letters.*/
             do
             {
+                if (verbosity)
+                {
+                    System.out.println("In the loop to read in each character"
+                            + " and if it is a letter added the count to "
+                            + "the hash map!");
+                }
                 cha = (char)numChar;
                 /*If letter add the count to the hashmap.*/
                 if (Character.isLetter(cha))
                 {
+                    System.out.println("The character is a letter.");
                     numCha.put(cha, numCha.get(cha) + 1);
                 }
                 /*Check if a period was given*/
                 if (countEvery > 1)
                 {
+                    if(verbosity)
+                    {
+                        System.out.println("In the period code.");
+                    }
                     /*This loop will check if a letter has been read and move
                      * the read as many times as the period was given. It will
                      * only count the letters ignoring all non-letters.
@@ -205,12 +252,24 @@ public class Ftable {
                     for (int num = 0; numChar != -1 && num < countEvery - 1; 
                             num++)
                     {
+                        if(verbosity)
+                        {
+                            System.out.println("Skipping every " + countEvery
+                                    + " letters.");
+                        }
                         try
                         {
                             while (numChar != -1 && 
                                     !Character.isLetter((char)(numChar = 
-                                    rFile.read())));
-                        }
+                                    rFile.read())))
+                            {
+                                System.out.println("In while loop to skip "
+                                        + "non letters");
+                                System.out.println((char)numChar 
+                                        + " is not a letter");
+                            }
+                            System.out.println((char)numChar + " is a letter");
+                        }                        
                         catch (IOException ex)
                         {
                             System.out.println("Could not read file.");
@@ -220,13 +279,19 @@ public class Ftable {
                 /*Check if at end of file.*/
                 if (numChar != -1)
                 {
+                    System.out.println("Not at the end of file.");
                     try
                     {
                         /*This will keep moving the read until a letter is 
                          * found.*/
                         while (numChar != -1 && 
                                 !Character.isLetter((char)(numChar = 
-                                rFile.read())));
+                                rFile.read())))
+                        {
+                            System.out.println("In the loop to "
+                                    + "skip non-letters." + (char)numChar 
+                                    + " is not a letter.");
+                        }
                     }
                     catch (IOException ex)
                     {
@@ -248,6 +313,11 @@ public class Ftable {
             System.out.println("Enter a string!");
             plain = scanner.nextLine();
             plain = plain.toUpperCase();
+            
+            if(verbosity)
+            {
+                
+            }
             /*This will move the start offset if one was given.*/
             for (int num1 = startCharSkip; num1 < plain.length();)
             {
