@@ -1,13 +1,16 @@
 package ftable;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This program counts how many times a letter is in the string and prints
@@ -67,7 +70,8 @@ public class Ftable {
                     arg.contains(".out"))
             {
                 /*Check to see if this is the first file given or the second*/
-                /*If first then it is the read file and it second the write file*/
+                /*If first then it is the read file and it second the write 
+                 * file*/
                 if (!first)
                 {
                     inFile = true;
@@ -117,17 +121,20 @@ public class Ftable {
     {
         String plain = "";
         int total = 0;
-        Scanner scanner = new Scanner(System.in);
+        BufferedReader scanner = 
+                new BufferedReader(new InputStreamReader(System.in));
         int number = 0;
         int numChar = 0;
         float per = 0;
         char cha = ' ';
+        int numPlace = 0;
         DecimalFormat format = new DecimalFormat();
         format.setMaximumFractionDigits(2);
         format.setMinimumFractionDigits(2);
         format.setMaximumIntegerDigits(3);
         format.setMinimumIntegerDigits(3);
         String temp = "";
+        boolean firstTime = true;
         
         Map<Character, Integer> numCha = new HashMap<>();
         
@@ -143,288 +150,431 @@ public class Ftable {
         /*Check to see if an input file was given.*/
         if (inFile)
         {
+            inFileCode(numChar, cha, numCha);            
+        }
+        else
+        {
+            notInFileCode(numPlace, firstTime, plain, scanner, numCha);            
+        }
+        /* This adds up all the letters found.*/
+        for (int num = 0; num < 26; num++)
+        {            
+            total = total + numCha.get((char)('A' + num));
             if (verbosity)
             {
-                System.out.println("In ifFile code!");
+                System.out.println("Adding up all the counted letters. total = " 
+                        + total);
             }
-            /*Check to see if a start offset was given.*/
-            if (startCharSkip != 0)
+        }   
+        /* Checks if an out file was given.*/
+        if (outFile)
+        {   
+            outFileCode(total, per, format, temp, number, numCha);            
+        }
+        else
+        {
+            notOutFileCode(total, per, format, temp, number, numCha);            
+        }
+    }
+
+    private static void inFileCode(int numChar, char cha, Map<Character, 
+            Integer> numCha) 
+    {
+    if (verbosity)
+    {
+        System.out.println("In ifFile code!");
+    }
+    /*Check to see if a start offset was given.*/
+        if (startCharSkip != 0)
+        {
+            if(verbosity)
             {
-                if(verbosity)
-                {
-                    System.out.println("In startCharSkip code!");
-                }
-                /*This will move the read of the file a number of times
-                 * equal to the offset given.
-                 */
-                for (int num = 0; num <= startCharSkip && numChar != -1; num++)
-                {  
-                    if (verbosity)
-                    {
-                        System.out.println("Skipping " + num + " character.");
-                    }
-                    try
-                    {
-                        numChar = rFile.read();
-                        if (verbosity)
-                        {
-                            System.out.println("Read in " 
-                                    + (char)numChar + " character!");
-                        }
-                    }
-                    catch (IOException ex)
-                    {
-                        System.out.println("Could not read from file.");
-                    }
-                    cha = (char)numChar;
-                    /*This check to see if last read is a letter.
-                     * if not then keep reading character until a letter is 
-                     * found.
-                     */
-                    while (!Character.isLetter(cha))
-                    {
-                        if (verbosity)
-                        {
-                            System.out.println(cha + " is not a letter!");
-                        }
-                        try
-                        {
-                            if (verbosity)
-                            {
-                                System.out.println(cha 
-                                    + " is not a letter, so reading "
-                                        + "next character!");
-                            }
-                            numChar = rFile.read();
-                        }
-                        catch (IOException ex)
-                        {
-                            System.out.println("Could not read file.");
-                        }
-                        cha = (char)numChar;
-                    }
-                }
+                System.out.println("In startCharSkip code!");
             }
-            else
-            {
+            /*This will move the read of the file a number of times
+             * equal to the offset given.
+             */
+            for (int num = 0; num <= startCharSkip && numChar != -1; num++)
+            {  
                 if (verbosity)
                 {
-                    System.out.println("Skipped startCharSkip code!" 
-                            + " Reading in first character.");
+                    System.out.println("Skipping " + num + " character.");
                 }
                 try
                 {
                     numChar = rFile.read();
+                    if (verbosity)
+                    {
+                        System.out.println("Read in " 
+                                + (char)numChar + " character!");
+                    }
                 }
                 catch (IOException ex)
                 {
-                    System.out.println("Could not read file.");
+                    System.out.println("Could not read from file.");
+                }
+                cha = (char)numChar;
+                /*This check to see if last read is a letter.
+                 * if not then keep reading character until a letter is 
+                 * found.
+                 */
+                while (!Character.isLetter(cha))
+                {
+                    if (verbosity)
+                    {
+                        System.out.println(cha + " is not a letter!");
+                    }
+                    try
+                    {
+                        if (verbosity)
+                        {
+                            System.out.println(cha 
+                                + " is not a letter, so reading "
+                                    + "next character!");
+                        }
+                        numChar = rFile.read();
+                    }
+                    catch (IOException ex)
+                    {
+                        System.out.println("Could not read file.");
+                    }
+                    cha = (char)numChar;
                 }
             }
-            /*This loops through the rest of the input file looking for 
-             * letters.*/
-            do
+        }
+        else
+        {
+            if (verbosity)
+            {
+                System.out.println("Skipped startCharSkip code!" 
+                        + " Reading in first character.");
+            }
+            try
+            {
+                numChar = rFile.read();
+            }
+            catch (IOException ex)
+            {
+                System.out.println("Could not read file.");
+            }
+        }
+        /*This loops through the rest of the input file looking for 
+         * letters.*/
+        do
+        {
+            if (verbosity)
+            {
+                System.out.println("In the loop to read in each character"
+                        + " and if it is a letter added the count to "
+                        + "the hash map!");
+            }
+            cha = (char)numChar;
+            /*If letter add the count to the hashmap.*/
+            if (Character.isLetter(cha))
             {
                 if (verbosity)
                 {
-                    System.out.println("In the loop to read in each character"
-                            + " and if it is a letter added the count to "
-                            + "the hash map!");
+                    System.out.println("**The character is a letter. char = " 
+                        + cha);
                 }
-                cha = (char)numChar;
-                /*If letter add the count to the hashmap.*/
-                if (Character.isLetter(cha))
+                
+                numCha.put(cha, numCha.get(cha) + 1);
+            }
+            /*Check if a period was given*/
+            if (countEvery > 1)
+            {
+                if(verbosity)
                 {
-                    System.out.println("The character is a letter.");
-                    numCha.put(cha, numCha.get(cha) + 1);
+                    System.out.println("In the period code.");
                 }
-                /*Check if a period was given*/
-                if (countEvery > 1)
+                /*This loop will check if a letter has been read and move
+                 * the read as many times as the period was given. It will
+                 * only count the letters ignoring all non-letters.
+                 */
+                for (int num = 0; numChar != -1 && num < countEvery - 1; 
+                        num++)
                 {
                     if(verbosity)
                     {
-                        System.out.println("In the period code.");
+                        System.out.println("Skipping every " + countEvery
+                                + " letters.");
                     }
-                    /*This loop will check if a letter has been read and move
-                     * the read as many times as the period was given. It will
-                     * only count the letters ignoring all non-letters.
-                     */
-                    for (int num = 0; numChar != -1 && num < countEvery - 1; 
-                            num++)
+                    try
                     {
-                        if(verbosity)
+                        while (numChar != -1 && 
+                                !Character.isLetter((char)(numChar = 
+                                rFile.read())))
                         {
-                            System.out.println("Skipping every " + countEvery
-                                    + " letters.");
-                        }
-                        try
-                        {
-                            while (numChar != -1 && 
-                                    !Character.isLetter((char)(numChar = 
-                                    rFile.read())))
+                            if (verbosity)
                             {
                                 System.out.println("In while loop to skip "
                                         + "non letters");
                                 System.out.println((char)numChar 
                                         + " is not a letter");
                             }
-                            System.out.println((char)numChar + " is a letter");
-                        }                        
-                        catch (IOException ex)
-                        {
-                            System.out.println("Could not read file.");
                         }
+                        if (verbosity)
+                        {
+                            System.out.println((char)numChar + " is a letter");
+                        }
+                    }                        
+                    catch (IOException ex)
+                    {
+                        System.out.println("Could not read file.");
                     }
                 }
-                /*Check if at end of file.*/
-                if (numChar != -1)
+            }
+            /*Check if at end of file.*/
+            if (numChar != -1)
+            {
+                if (verbosity)
                 {
                     System.out.println("Not at the end of file.");
-                    try
+                }
+                
+                try
+                {
+                    /*This will keep moving the read until a letter is 
+                     * found.*/
+                    while (numChar != -1 && 
+                            !Character.isLetter((char)(numChar = 
+                            rFile.read())))
                     {
-                        /*This will keep moving the read until a letter is 
-                         * found.*/
-                        while (numChar != -1 && 
-                                !Character.isLetter((char)(numChar = 
-                                rFile.read())))
+                        if (verbosity)
                         {
                             System.out.println("In the loop to "
                                     + "skip non-letters." + (char)numChar 
                                     + " is not a letter.");
                         }
                     }
-                    catch (IOException ex)
+                }
+                catch (IOException ex)
+                {
+                    System.out.println("Could not read file.");
+                }
+            }
+        } while (numChar != -1);
+        try
+        {
+            if (verbosity)
+            {
+                System.out.println("Closing read file.");
+            }
+            rFile.close();
+        }
+        catch (IOException ex)
+        {
+            System.out.println("Could not close file.");
+        }
+    }
+
+    private static void notInFileCode(int numPlace, boolean firstTime, 
+            String plain, BufferedReader scanner, 
+            Map<Character, Integer> numCha) 
+    {
+        if(verbosity)
+        {
+            System.out.println("Input file not given.");
+        }
+        System.out.println("Enter a string!");
+        try {
+            while (!(plain = scanner.readLine()).toString().equals("-1"))
+            {
+                if (verbosity)
+                {
+                    System.out.println("Reading in the text. " 
+                            + plain.toString());
+                }
+                plain = plain.toUpperCase();
+
+                for (numPlace = 0; numPlace < plain.length(); numPlace++)
+                {
+                    if(verbosity)
                     {
-                        System.out.println("Could not read file.");
+                        System.out.println("Reading char.! numPlace = " 
+                                + numPlace  + " char at numPlace " 
+                                + plain.charAt(numPlace));
+                    }
+                    if (startCharSkip != 0 && firstTime)
+                    {
+                        if(verbosity)
+                        {
+                            System.out.println("In startCharSkip code!");
+                        }                            
+                        /*This will move the start offset if one was given.*/
+                        for (int num2 = 0; num2 < startCharSkip && 
+                                !plain.equals("-1"); numPlace++, num2++)
+                        {
+                            if (verbosity)
+                            {
+                                System.out.println("Skipping char at location " 
+                                        + numPlace);
+                            }
+                            /* If the start of the line is not letters then 
+                             * find the first letter by increasing num1
+                             * until a letter is found.
+                             */
+                            while(!Character.isLetter(plain.charAt(numPlace)))
+                            {
+                                if(verbosity)
+                                {
+                                    System.out.println("Loop through "
+                                            + "Non-letters! " 
+                                            + plain.charAt(numPlace));
+                                }
+                                numPlace++;
+                            }                          
+                        }
+                        while(!Character.isLetter(plain.charAt(numPlace)))
+                        {
+                            if(verbosity)
+                            {
+                                System.out.println("Loop through "
+                                        + "Non-letters! " 
+                                        + plain.charAt(numPlace));
+                            }
+                            numPlace++;
+                        } 
+                        firstTime = false;
+                    }
+                    /* Increase the count of the letter.*/
+                    if (Character.isLetter(plain.charAt(numPlace)))
+                    {
+                        if(verbosity)
+                        {
+                            System.out.println("Letter found! " 
+                                    + plain.charAt(numPlace));
+                        }
+                        numCha.put(plain.charAt(numPlace),
+                                numCha.get(plain.charAt(numPlace)) + 1);                    
+                    }       
+                    /* This loop moves the correct period given.*/
+                    for (int num2 = 0; countEvery > 1 && num2 < countEvery 
+                            && numPlace < plain.length(); num2++)
+                    {
+                        if (verbosity && numPlace < plain.length())
+                        {
+                           System.out.println("In the peroid code. num2 = " 
+                                   + num2 + " period = " + countEvery 
+                                   + " numPlace = " + numPlace + " char = " 
+                                   + plain.charAt(numPlace));
+                        }
+                        numPlace++;
+                        if (numPlace < plain.length() && 
+                                !Character.isLetter(plain.charAt(numPlace)))
+                        {
+                            if (verbosity)
+                            {
+                                System.out.println("Found a non-letter " 
+                                        + plain.charAt(numPlace));
+                            }
+                            num2--;
+                        }
+                    }
+                    if(countEvery > 1)
+                    {
+                        numPlace--;
                     }
                 }
-            } while (numChar != -1);
+                firstTime = true;
+            }
+        } 
+        catch (IOException ex) 
+        {
+            System.out.println("Could not read line.");
+        }
+            
+    }
+
+    private static void outFileCode(int total, float per, DecimalFormat format, 
+            String temp, int number, Map<Character, Integer> numCha) 
+    {
+        if (verbosity)
+        {
+            System.out.println("Out file was given. In that code.");
+        }
+        try
+        {
+            wFile.write("Total chars: " + total);
+            wFile.write('\n');
+        }
+        catch (IOException ex)
+        {
+            System.out.println("Could not write to the file.");
+        }
+        /*Loop to print all the info for the letters.*/
+        for (int num = 0; num < 26; num++){
+            if (verbosity)
+            {
+                System.out.println("In the code to print the letters "
+                        + "and info.");
+            }
+            number = numCha.get((char)('A' + num));
+            per = ((float)number * 100.0f) / total;
+            temp = format.format(per);
+            /* This helps format the output of the percent*/
+            if (temp.charAt(0) == '0')
+            {   
+                if (temp.charAt(1) == '0')
+                {
+                    temp = temp.replaceFirst("0", " ");
+                    temp = temp.replaceFirst("0", " ");
+                }
+                else
+                {
+                    temp = temp.replaceFirst("0", " ");
+                }
+
+            }                
             try
             {
-                rFile.close();
+                wFile.write((char)('A' + num) +
+                        String.format("%" + 9 + "s", number)
+                        + "(" + temp + ") ");
             }
             catch (IOException ex)
             {
-                System.out.println("Could not close file.");
+                System.out.println("Could not write to the file.");
             }
-        }
-        else
-        {
-            if(verbosity)
+            /* This prints the histogram*/
+            for (float num1 = 0f; num1 < per; num1++)
             {
-                System.out.println("Input file not given.");
-            }
-            System.out.println("Enter a string!");
-            plain = scanner.nextLine();
-            plain = plain.toUpperCase();          
-            
-            /*This will move the start offset if one was given.*/
-            for (int num1 = startCharSkip; num1 < plain.length();)
-            {
-                
-                /*If the character is not a letter then num1 is increased
-                 * until a letter is found.
-                 */
-                while (!Character.isLetter(plain.charAt(num1)))
+                try
                 {
-                    num1++;
-                }        
-                /* Increase the count of the letter.*/
-                if (Character.isLetter(plain.charAt(num1)))
+                    wFile.write('*');
+                }
+                catch (IOException ex)
                 {
-                    numCha.put(plain.charAt(num1), 
-                            numCha.get(plain.charAt(num1)) + 1);                    
-                }       
-                /* This loop moves the correct period given.*/
-                for (int num2 = 0; countEvery > 1 && num2 < countEvery; num2++)
-                {
-                    num1++;
-                    if (num1 < plain.length() && 
-                            !Character.isLetter(plain.charAt(num1)))
-                    {
-                        num2--;
-                    }
+                    System.out.println("Could not write to the file.");
                 }
             }
-        }
-        /* This adds up all the letters found.*/
-        for (int num = 0; num < 26; num++)
-        {
-            total = total + numCha.get((char)('A' + num));
-        }   
-        /* Checks if an out file was given.*/
-        if (outFile)
-        {   
             try
             {
-                wFile.write("Total chars: " + total);
                 wFile.write('\n');
             }
             catch (IOException ex)
             {
                 System.out.println("Could not write to the file.");
             }
-            /*Loop to print all the info for the letters.*/
-            for (int num = 0; num < 26; num++){
-                number = numCha.get((char)('A' + num));
-                per = ((float)number * 100.0f) / total;
-                temp = format.format(per);
-                /* This helps format the output of the percent*/
-                if (temp.charAt(0) == '0')
-                {   
-                    if (temp.charAt(1) == '0')
-                    {
-                        temp = temp.replaceFirst("0", " ");
-                        temp = temp.replaceFirst("0", " ");
-                    }
-                    else
-                    {
-                        temp = temp.replaceFirst("0", " ");
-                    }
-                    
-                }                
-                try
-                {
-                    wFile.write((char)('A' + num) +
-                            String.format("%" + 9 + "s", number)
-                            + "(" + temp + ") ");
-                }
-                catch (IOException ex)
-                {
-                    System.out.println("Could not write to the file.");
-                }
-                /* This prints the histogram*/
-                for (float num1 = 0f; num1 < per; num1++)
-                {
-                    try
-                    {
-                        wFile.write('*');
-                    }
-                    catch (IOException ex)
-                    {
-                        System.out.println("Could not write to the file.");
-                    }
-                }
-                try
-                {
-                    wFile.write('\n');
-                }
-                catch (IOException ex)
-                {
-                    System.out.println("Could not write to the file.");
-                }
-            }
-            try
-            {
-                wFile.close();
-            }
-            catch (IOException ex)
-            {
-                System.out.println("Could not close the file.");
-            }
         }
-        else
+        try
         {
+            wFile.close();
+        }
+        catch (IOException ex)
+        {
+            System.out.println("Could not close the file.");
+        }
+    }
+
+    private static void notOutFileCode(int total, float per, 
+            DecimalFormat format, String temp, int number, 
+            Map<Character, Integer> numCha) 
+    {
+        if (verbosity)
+            {
+                System.out.println("In the code to print to screen.");
+            }
             System.out.println("Total chars: " + total);
             /*Loop to print all the info for the letters.*/
             for (int num = 0; num < 26; num++){
@@ -455,6 +605,5 @@ public class Ftable {
                 }
                 System.out.print('\n');
             }
-        }
     }
 }
