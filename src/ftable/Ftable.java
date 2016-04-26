@@ -1,4 +1,3 @@
-package ftable;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -378,7 +377,9 @@ public class Ftable {
         }
         System.out.println("Enter a string!");
         try {
-            while (!(plain = scanner.readLine()).toString().equals("-1"))
+        	   plain = scanner.readLine().toString();
+            while (plain != null && !plain.equals(null) &&
+                !plain.equals("-1"))
             {
                 if (verbosity)
                 {
@@ -477,6 +478,7 @@ public class Ftable {
                     }
                 }
                 firstTime = true;
+                plain = scanner.readLine();
             }
         } 
         catch (IOException ex) 
