@@ -1,3 +1,4 @@
+package ftable;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -29,6 +30,7 @@ public class Ftable {
     private static FileReader rFile = null;
     private static FileWriter wFile = null;
     private static boolean verbosity = false;
+    
     
     public static void main(String[] args) 
     {
@@ -65,8 +67,8 @@ public class Ftable {
                 }
             }
             /*if an input or output file is given*/
-            else if (arg.contains(".in") || arg.contains(".txt") || 
-                    arg.contains(".out"))
+            else //if (arg.contains(".in") || arg.contains(".txt") || 
+                    //arg.contains(".out"))
             {
                 /*Check to see if this is the first file given or the second*/
                 /*If first then it is the read file and it second the write 
@@ -107,10 +109,10 @@ public class Ftable {
                     }
                 }    
             }
-            else
-            {
-                System.out.println("Not found");
-            }
+            //else
+           // {
+           //     System.out.println("Not found");
+           // }
         }
         fTable();
         System.exit(1);
@@ -153,7 +155,7 @@ public class Ftable {
         }
         else
         {
-            notInFileCode(numPlace, firstTime, plain, scanner, numCha);            
+            notInFileCode(numPlace, firstTime, plain, scanner, numCha); 
         }
         /* This adds up all the letters found.*/
         for (int num = 0; num < 26; num++)
@@ -161,8 +163,8 @@ public class Ftable {
             total = total + numCha.get((char)('A' + num));
             if (verbosity)
             {
-                System.out.println("Adding up all the counted letters. total = " 
-                        + total);
+                System.out.println("Adding up all the counted letters. "
+                        + "total = " + total);
             }
         }   
         /* Checks if an out file was given.*/
@@ -172,7 +174,7 @@ public class Ftable {
         }
         else
         {
-            notOutFileCode(total, per, format, temp, number, numCha);            
+            notOutFileCode(total, per, format, temp, number, numCha);
         }
     }
 
@@ -181,7 +183,7 @@ public class Ftable {
     {
     if (verbosity)
     {
-        System.out.println("In ifFile code!");
+        System.out.println("In inFile code!");
     }
     /*Check to see if a start offset was given.*/
         if (startCharSkip != 0)
@@ -268,15 +270,16 @@ public class Ftable {
                         + "the hash map!");
             }
             cha = (char)numChar;
+            
             /*If letter add the count to the hashmap.*/
-            if (Character.isLetter(cha))
+            if ((cha >= 'a' && cha <= 'z') || (cha >= 'A' && cha <= 'Z'))
             {
                 if (verbosity)
                 {
                     System.out.println("**The character is a letter. char = " 
                         + cha);
                 }
-                
+                cha = Character.toUpperCase(cha);
                 numCha.put(cha, numCha.get(cha) + 1);
             }
             /*Check if a period was given*/
@@ -447,7 +450,7 @@ public class Ftable {
                                     + plain.charAt(numPlace));
                         }
                         numCha.put(plain.charAt(numPlace),
-                                numCha.get(plain.charAt(numPlace)) + 1);                    
+                                numCha.get(plain.charAt(numPlace)) + 1); 
                     }       
                     /* This loop moves the correct period given.*/
                     for (int num2 = 0; countEvery > 1 && num2 < countEvery 
@@ -491,6 +494,30 @@ public class Ftable {
     private static void outFileCode(int total, float per, DecimalFormat format, 
             String temp, int number, Map<Character, Integer> numCha) 
     {
+        float indexCoin = 0f;  
+        float tempTotal = 0f;
+        float dis = 1f;
+        String tempString;
+        DecimalFormat indexFormat = new DecimalFormat();
+        indexFormat.setMaximumFractionDigits(4);
+        indexFormat.setMinimumFractionDigits(4);
+        indexFormat.setMaximumIntegerDigits(1);
+        indexFormat.setMinimumIntegerDigits(1);
+        
+        tempTotal = (float)total;
+        if (tempTotal - dis == 0)
+        {
+            indexCoin =  ((dis - 1f) / dis) * (tempTotal / (tempTotal - 1f)) 
+                    * 0.038f;
+        }
+        else
+        {
+            indexCoin = ((1f/dis)*((tempTotal - dis)/(tempTotal - 1f)))
+                    * 0.066f + (((dis - 1f) / dis) 
+                    * (tempTotal / (tempTotal - 1f)) * 0.038f);
+        }
+        
+        tempString = indexFormat.format(indexCoin);
         if (verbosity)
         {
             System.out.println("Out file was given. In that code.");
@@ -559,6 +586,15 @@ public class Ftable {
                 System.out.println("Could not write to the file.");
             }
         }
+        try 
+        {
+            wFile.write('\n');
+            wFile.write("Index of Coincidence: " + tempString);
+        }
+        catch (IOException ex)
+        {
+            
+        }
         try
         {
             wFile.close();
@@ -573,39 +609,67 @@ public class Ftable {
             DecimalFormat format, String temp, int number, 
             Map<Character, Integer> numCha) 
     {
+        float indexCoin = 0f;  
+        float tempTotal = 0f;
+        float dis = 3f;
+        String tempString = null;
+        DecimalFormat indexFormat = new DecimalFormat();
+        indexFormat.setMaximumFractionDigits(4);
+        indexFormat.setMinimumFractionDigits(4);
+        indexFormat.setMaximumIntegerDigits(1);
+        format.setMinimumIntegerDigits(1);
+        format.setMaximumIntegerDigits(2);
+        
+        tempTotal = (float)total;
+        if (tempTotal - dis == 0)
+        {
+            indexCoin = ((dis - 1f) / dis) * (tempTotal / (tempTotal - 1f)) 
+                    * 0.038f;
+        }
+        else 
+        {
+            indexCoin = (1f/dis)*((tempTotal - dis)/(tempTotal - dis)) * 0.066f 
+                + ((dis - 1f) / dis) * (tempTotal / (tempTotal - 1f)) * 0.038f;
+        }
+        
+        tempString = indexFormat.format(indexCoin);
+        
         if (verbosity)
+        {
+            System.out.println("In the code to print to screen.");
+        }
+        System.out.println("Total chars: " + total);
+        /*Loop to print all the info for the letters.*/
+        for (int num = 0; num < 26; num++)
+        {
+            number = numCha.get((char)('A' + num));
+            per = ((float)number * 100.0f) / total;
+            temp = format.format(per);
+            /* This helps format the output of the percent*/
+            if (temp.charAt(0) == '0')
+            {   
+               // if (temp.charAt(1) == '0')
+               // {
+               //     temp = temp.replaceFirst("0", " ");
+               //     temp = temp.replaceFirst("0", " ");
+               // }
+               // else
+              //  {
+                    temp = temp.replaceFirst("0", " ");
+               // }
+
+            }
+            System.out.print((char)('A' + num) + ":" + 
+                    String.format("%" + 9 + "s", number)
+                    + "(" + temp + ") ");
+            /* This prints the histogram*/
+            for (float num1 = 0f; num1 < per; num1++)
             {
-                System.out.println("In the code to print to screen.");
+                System.out.print('*');
             }
-            System.out.println("Total chars: " + total);
-            /*Loop to print all the info for the letters.*/
-            for (int num = 0; num < 26; num++){
-                number = numCha.get((char)('A' + num));
-                per = ((float)number * 100.0f) / total;
-                temp = format.format(per);
-                /* This helps format the output of the percent*/
-                if (temp.charAt(0) == '0')
-                {   
-                    if (temp.charAt(1) == '0')
-                    {
-                        temp = temp.replaceFirst("0", " ");
-                        temp = temp.replaceFirst("0", " ");
-                    }
-                    else
-                    {
-                        temp = temp.replaceFirst("0", " ");
-                    }
-                    
-                }
-                System.out.print((char)('A' + num) + 
-                        String.format("%" + 9 + "s", number)
-                        + "(" + temp + ") ");
-                /* This prints the histogram*/
-                for (float num1 = 0f; num1 < per; num1++)
-                {
-                    System.out.print('*');
-                }
-                System.out.print('\n');
-            }
+            System.out.print('\n');
+        }
+        System.out.print('\n');
+        System.out.println("Index of Coincidence: " + tempString);
     }
 }
